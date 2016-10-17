@@ -21,6 +21,16 @@ use Bluemesa\Bundle\SearchBundle\Search\SearchQueryInterface;
  */
 class ConstructRepository extends SearchableRepository
 {
+    public function createIndexQueryBuilder()
+    {
+        return parent::createIndexQueryBuilder();
+    }
+
+    public function createCountQueryBuilder()
+    {
+        return parent::createCountQueryBuilder();
+    }
+
     /**
      * {@inheritdoc}
      */

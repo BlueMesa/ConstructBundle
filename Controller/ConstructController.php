@@ -38,8 +38,18 @@ class ConstructController extends Controller
     /**
      * @CRUD\Action("index")
      * @CRUD\Paginate(25)
+     * @CRUD\Filter("Bluemesa\Bundle\ConstructBundle\Filter\ConstructFilter")
      * @REST\View()
      * @REST\Get("", defaults={"_format" = "html"}))
+     * @REST\Get("/{type}", name="_type",
+     *     requirements={"type" = "plasmids|genomic|synthetic"},
+     *     defaults={"_format" = "html"}))
+     *  @REST\Get("/sort_by_{sort}_{order}", name="_sort",
+     *     requirements={"sort" = "name|type"},
+     *     defaults={"_format" = "html", "type" = "all", "sort" = "name", "order" = "asc"})
+     * @REST\Get("/{type}/sort_by_{sort}_{order}", name="_type_sort",
+     *     requirements={"type" = "plasmids|genomic|synthetic"},
+     *     defaults={"_format" = "html", "type" = "all", "order" = "asc"})
      *
      * @param  Request     $request
      * @return View
