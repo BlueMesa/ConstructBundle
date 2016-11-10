@@ -24,12 +24,26 @@ use Bluemesa\Bundle\CoreBundle\Filter\SortFilterInterface;
  * @author Radoslaw Kamil Ejsmont <radoslaw@ejsmont.net>
  */
 class ConstructFilter extends SecureListFilter implements SortFilterInterface {
-    
+
+    /**
+     * @var string
+     */
     protected $sort;
-    
+
+    /**
+     * @var string
+     */
     protected $order;
 
+    /**
+     * @var string
+     */
     protected $type;
+
+    /**
+     * @var bool
+     */
+    protected $redirect;
 
     /**
      * {@inheritdoc}
@@ -44,11 +58,13 @@ class ConstructFilter extends SecureListFilter implements SortFilterInterface {
             $this->setSort($request->get('sort', 'name'));
             $this->setOrder($request->get('order', 'asc'));
             $this->setType($request->get('type', 'all'));
+            $this->redirect = ($request->get('resolver', 'off') == 'on');
         } else {
             $this->access = 'public';
             $this->sort = 'name';
             $this->order = 'asc';
             $this->type = 'all';
+            $this->redirect = false;
         }
     }
     
@@ -94,5 +110,35 @@ class ConstructFilter extends SecureListFilter implements SortFilterInterface {
     public function setType($type)
     {
         $this->type = $type;
+    }
+
+    /**
+     *
+     */
+    public function getRedirectRoute()
+    {
+        $currentRoute = $request->attributes->get('_route');
+
+        if ($currentRoute == '') {
+            $route = 'bluemesa_flies_vial_list_2';
+        } else {
+            $pieces = explode('_',$currentRoute);
+            if (! is_numeric($pieces[count($pieces) - 1])) {
+                $pieces[] = '2';
+            }
+            $route = ($currentRoute == 'default') ? 'bluemesa_flies_vial_list_2' : implode('_', $pieces);
+        }
+
+    }
+
+    public function getRedirectParameters()
+    {
+        $routeParameters = ($filter instanceof VialFilter) ?
+            array(
+                'access' => $filter->getAccess(),
+                'filter' => $filter->getFilter(),
+                'sort' => $filter->getSort(),
+                'order' => $filter->getOrder()) :
+            array();
     }
 }

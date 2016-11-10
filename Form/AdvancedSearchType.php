@@ -49,8 +49,8 @@ class AdvancedSearchType extends AbstractType
         )->add('filter', ChoiceType::class, array(
                 'label' => 'Scope',
                 'choices' => array(
-                    'primary' => 'Primary',
-                    'secondary' => 'Secondary'
+                    'Primary'   => 'primary',
+                    'Secondary' => 'secondary'
                 ),
                 'expanded' => true,
                 'placeholder' => 'All',
