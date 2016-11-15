@@ -38,7 +38,7 @@ class ConstructController extends Controller
     /**
      * @CRUD\Action("index")
      * @CRUD\Paginate(25)
-     * @CRUD\Filter("Bluemesa\Bundle\ConstructBundle\Filter\ConstructFilter")
+     * @CRUD\Filter("Bluemesa\Bundle\ConstructBundle\Filter\ConstructFilter", redirectRoute="bluemesa_construct_index_type_sort")
      * @REST\View()
      * @REST\Get("", defaults={"_format" = "html"}))
      * @REST\Get("/{type}", name="_type",

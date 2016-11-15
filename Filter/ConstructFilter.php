@@ -11,6 +11,7 @@
 
 namespace Bluemesa\Bundle\ConstructBundle\Filter;
 
+use Bluemesa\Bundle\CrudBundle\Filter\RedirectFilterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -23,7 +24,7 @@ use Bluemesa\Bundle\CoreBundle\Filter\SortFilterInterface;
  *
  * @author Radoslaw Kamil Ejsmont <radoslaw@ejsmont.net>
  */
-class ConstructFilter extends SecureListFilter implements SortFilterInterface {
+class ConstructFilter extends SecureListFilter implements SortFilterInterface, RedirectFilterInterface  {
 
     /**
      * @var string
@@ -44,6 +45,7 @@ class ConstructFilter extends SecureListFilter implements SortFilterInterface {
      * @var bool
      */
     protected $redirect;
+
 
     /**
      * {@inheritdoc}
@@ -71,28 +73,32 @@ class ConstructFilter extends SecureListFilter implements SortFilterInterface {
     /**
      * {@inheritdoc}
      */
-    public function getSort() {
+    public function getSort()
+    {
         return $this->sort;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setSort($sort) {
+    public function setSort($sort)
+    {
         $this->sort = $sort;
     }
     
     /**
      * {@inheritdoc}
      */
-    public function getOrder() {
+    public function getOrder()
+    {
         return $this->order;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setOrder($order) {
+    public function setOrder($order)
+    {
         $this->order = $order;
     }
 
@@ -113,32 +119,22 @@ class ConstructFilter extends SecureListFilter implements SortFilterInterface {
     }
 
     /**
-     *
+     * @return array
      */
-    public function getRedirectRoute()
+    public function getParameters()
     {
-        $currentRoute = $request->attributes->get('_route');
-
-        if ($currentRoute == '') {
-            $route = 'bluemesa_flies_vial_list_2';
-        } else {
-            $pieces = explode('_',$currentRoute);
-            if (! is_numeric($pieces[count($pieces) - 1])) {
-                $pieces[] = '2';
-            }
-            $route = ($currentRoute == 'default') ? 'bluemesa_flies_vial_list_2' : implode('_', $pieces);
-        }
-
+        return array(
+            'type'   => $this->getType(),
+            'sort'   => $this->getSort(),
+            'order'  => $this->getOrder()
+        );
     }
 
-    public function getRedirectParameters()
+    /**
+     * {@inheritDoc}
+     */
+    public function needRedirect()
     {
-        $routeParameters = ($filter instanceof VialFilter) ?
-            array(
-                'access' => $filter->getAccess(),
-                'filter' => $filter->getFilter(),
-                'sort' => $filter->getSort(),
-                'order' => $filter->getOrder()) :
-            array();
+        return $this->redirect;
     }
 }

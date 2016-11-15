@@ -50,6 +50,7 @@ class ConstructType extends AbstractType
         'Fosmid' => 'fosmid',
         'BAC' => 'BAC',
         'Cosmid' => 'cosmid',
+        'Linear DNA' => 'linear',
     );
 
     /**

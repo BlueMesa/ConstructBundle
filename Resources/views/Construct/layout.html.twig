@@ -36,9 +36,9 @@
               </li>
               <li>
                 <label>
-                  <input class="toggle-children" type="radio" name="type" id="type_synthetic" value="synthetic"
-                          {{ (filter is defined and filter.type == 'synthetic') ? 'checked' }} >
-                  Synthetic DNA
+                  <input class="toggle-children" type="radio" name="type" id="type_synthetic" value="linear"
+                          {{ (filter is defined and filter.type == 'linear') ? 'checked' }} >
+                  Linear DNA
                 </label>
               </li>
             </ul>
@@ -52,14 +52,14 @@
                 <label>
                   <input type="radio" name="sort" id="sort_name" value="name"
                           {{ (filter is not defined or filter.sort == 'name') ? 'checked' }} >
-                  Setup date
+                  Construct name
                 </label>
               </li>
               <li>
                 <label>
                   <input type="radio" name="sort" id="sort_type" value="type"
                           {{ (filter is defined and filter.sort == 'type') ? 'checked' }} >
-                  Flip date
+                  Construct type
                 </label>
               </li>
               <li>
@@ -73,6 +73,7 @@
           </li>
         {% endblock sidebar_display_sort %}
         <li class="panel-footer">
+          <input type="hidden" name="resolver" value="on">
           <button type="submit" class="btn btn-primary btn-sm btn-block">
             List constructs
           </button>
