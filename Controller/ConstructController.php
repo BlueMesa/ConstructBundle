@@ -42,13 +42,13 @@ class ConstructController extends Controller
      * @REST\View()
      * @REST\Get("", defaults={"_format" = "html"}))
      * @REST\Get("/{type}", name="_type",
-     *     requirements={"type" = "plasmids|genomic|synthetic"},
+     *     requirements={"type" = "plasmid|genomic|synthetic|all"},
      *     defaults={"_format" = "html"}))
      * @REST\Get("/sort/{sort}/{order}", name="_sort",
      *     requirements={"sort" = "name|type"},
      *     defaults={"_format" = "html", "type" = "all", "sort" = "name", "order" = "asc"})
      * @REST\Get("/{type}/sort/{sort}/{order}", name="_type_sort",
-     *     requirements={"type" = "plasmids|genomic|synthetic"},
+     *     requirements={"type" = "plasmid|genomic|synthetic|all"},
      *     defaults={"_format" = "html", "type" = "all", "order" = "asc"})
      *
      * @param  Request     $request

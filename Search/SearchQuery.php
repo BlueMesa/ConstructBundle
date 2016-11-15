@@ -50,7 +50,7 @@ class SearchQuery extends ACLSearchQuery
      * {@inheritdoc}
      */
     public function getEntityClass() {
-        return 'Bluemesa\Bundle\AntibodyBundle\Entity\Antibody';
+        return 'Bluemesa\Bundle\ConstructBundle\Entity\Construct';
     }
 
     /**
@@ -59,9 +59,7 @@ class SearchQuery extends ACLSearchQuery
      * @return string
      */
     public function getFilter() {
-        
         if (empty($this->filter)) {
-            
             return 'all';
         }
         

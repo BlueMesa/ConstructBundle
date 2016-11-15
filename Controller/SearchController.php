@@ -20,6 +20,8 @@ namespace Bluemesa\Bundle\ConstructBundle\Controller;
 
 
 use Bluemesa\Bundle\AclBundle\Controller\SecureController;
+use Bluemesa\Bundle\AclBundle\DependencyInjection\AuthorizationCheckerAwareTrait;
+use Bluemesa\Bundle\AclBundle\DependencyInjection\TokenStorageAwareTrait;
 use Bluemesa\Bundle\SearchBundle\Controller\SearchController as BaseSearchController;
 use Bluemesa\Bundle\ConstructBundle\Search\SearchQuery;
 use Bluemesa\Bundle\ConstructBundle\Form\SearchType;
@@ -31,13 +33,13 @@ use Symfony\Component\HttpFoundation\Request;
  * Search controller for the antibody bundle
  *
  * @REST\Prefix("/constructs/search")
- * @REST\NamePrefix("bluemesa_construct_")
+ * @REST\NamePrefix("bluemesa_construct_search_")
  *
  * @author Radoslaw Kamil Ejsmont <radoslaw@ejsmont.net>
  */
 class SearchController extends BaseSearchController
 {
-    use SecureController;
+    use TokenStorageAwareTrait, AuthorizationCheckerAwareTrait;
 
     /**
      * Render advanced search form
@@ -69,6 +71,7 @@ class SearchController extends BaseSearchController
      * Handle search result
      *
      * @REST\Get("/result", defaults={"_format" = "html"}))
+     * @REST\Post("/result", defaults={"_format" = "html"}))
      * @REST\View()
      *
      * @param  Request $request
@@ -110,7 +113,8 @@ class SearchController extends BaseSearchController
     {
         $searchQuery = new SearchQuery($advanced);
         $searchQuery->setTokenStorage($this->getTokenStorage());
-        
+        $searchQuery->setAuthorizationChecker($this->getAuthorizationChecker());
+
         return $searchQuery;
     }
 

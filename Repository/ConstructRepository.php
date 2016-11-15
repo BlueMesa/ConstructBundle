@@ -12,10 +12,13 @@
 namespace Bluemesa\Bundle\ConstructBundle\Repository;
 
 use Bluemesa\Bundle\ConstructBundle\Filter\ConstructFilter;
+use Bluemesa\Bundle\ConstructBundle\Search\SearchQuery;
 use Bluemesa\Bundle\CoreBundle\Filter\SortFilterInterface;
 use Bluemesa\Bundle\SearchBundle\Repository\SearchableRepository;
 use Bluemesa\Bundle\SearchBundle\Search\SearchQueryInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\Query\Parameter;
 
 /**
@@ -30,29 +33,9 @@ class ConstructRepository extends SearchableRepository
         $qb = parent::createIndexQueryBuilder();
 
         if ($this->filter instanceof ConstructFilter) {
-            switch ($this->filter->getType()) {
-                case 'all':
-                    break;
-                case 'plasmids':
-                    $qb->andWhere('e.type == :type')
-                        ->setParameter('type', 'plasmid');
-                    break;
-                case 'genomic':
-                    $qb->andWhere($qb->expr()->orX(
-                                $qb->expr()->eq('e.type', ':type_1'),
-                                $qb->expr()->eq('e.type', ':type_2'),
-                                $qb->expr()->eq('e.type', ':type_3')
-                        ))
-                        ->setParameters(new ArrayCollection(array(
-                            new Parameter('type_1', 'fosmid'),
-                            new Parameter('type_2', 'cosmid'),
-                            new Parameter('type_3', 'BAC')
-                        )));
-                    break;
-                case 'synthetic':
-                    $qb->andWhere('e.type == :type')
-                        ->setParameter('type', 'linear');
-                    break;
+            $expr = $this->getConstructFilterExpression($this->filter->getType());
+            if (null !== $expr) {
+                $qb->andWhere($expr);
             }
         }
 
@@ -69,6 +52,49 @@ class ConstructRepository extends SearchableRepository
         }
 
         return $qb;
+    }
+
+    protected function getSearchExpression(SearchQueryInterface $search)
+    {
+        $expr = parent::getSearchExpression($search);
+
+        if (($search instanceof SearchQuery)&&($expr instanceof Andx)) {
+            $expr->add($this->getConstructFilterExpression($search->getFilter()));
+        }
+
+        return $expr;
+    }
+
+    /**
+     * @param  string $type
+     * @return Expr
+     */
+    protected function getConstructFilterExpression($type)
+    {
+        $eb = $this->getEntityManager()->getExpressionBuilder();
+
+        switch($type) {
+            case 'all':
+                $expr = null;
+                break;
+            case 'plasmids':
+                $expr = $eb->eq('e.type', 'plasmid');
+                break;
+            case 'genomic':
+                $expr = $eb->orX(
+                    $eb->eq('e.type', '\'fosmid\''),
+                    $eb->eq('e.type', '\'cosmid\''),
+                    $eb->eq('e.type', '\'BAC\'')
+                );
+                break;
+            case 'linear':
+                $expr = $eb->eq('e.type', '\'linear\'');
+                break;
+            default:
+                $expr = $eb->eq('e.type', '\'' . $type . '\'');
+        }
+
+        return $expr;
     }
 
     /**

@@ -1,10 +1,10 @@
-{% extends "BluemesaAntibodyBundle:Antibody:layout.html.twig" %}
+{% extends "BluemesaConstructBundle:Construct:layout.html.twig" %}
 {% use "BluemesaSiteTemplateBundle:Form:form.html.twig" %}
 
 {% block headline %}Search{% endblock headline %}
 {% block form_header %}
   {{ form_start(form, {
-    'action': path('bluemesa_antibody_search_result'),
+    'action': path('bluemesa_construct_search_result'),
     'method': 'POST',
     'attr': {'class': 'form-horizontal'} 
     }) }}
