@@ -19,7 +19,6 @@
 namespace Bluemesa\Bundle\ConstructBundle\Controller;
 
 
-use Bluemesa\Bundle\AclBundle\Controller\SecureController;
 use Bluemesa\Bundle\AclBundle\DependencyInjection\AuthorizationCheckerAwareTrait;
 use Bluemesa\Bundle\AclBundle\DependencyInjection\TokenStorageAwareTrait;
 use Bluemesa\Bundle\SearchBundle\Controller\SearchController as BaseSearchController;
@@ -28,6 +27,7 @@ use Bluemesa\Bundle\ConstructBundle\Form\SearchType;
 use Bluemesa\Bundle\ConstructBundle\Form\AdvancedSearchType;
 use FOS\RestBundle\Controller\Annotations as REST;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Search controller for the antibody bundle
@@ -47,7 +47,7 @@ class SearchController extends BaseSearchController
      * @REST\Get("", defaults={"_format" = "html"}))
      * @REST\View()
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function advancedAction()
     {
@@ -60,7 +60,7 @@ class SearchController extends BaseSearchController
      * @REST\Get("/simple", defaults={"_format" = "html"}))
      * @REST\View()
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function searchAction()
     {

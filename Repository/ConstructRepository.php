@@ -28,6 +28,9 @@ use Doctrine\ORM\Query\Parameter;
  */
 class ConstructRepository extends SearchableRepository
 {
+    /**
+     * {@inheritdoc}
+     */
     public function createIndexQueryBuilder()
     {
         $qb = parent::createIndexQueryBuilder();
@@ -54,6 +57,9 @@ class ConstructRepository extends SearchableRepository
         return $qb;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getSearchExpression(SearchQueryInterface $search)
     {
         $expr = parent::getSearchExpression($search);

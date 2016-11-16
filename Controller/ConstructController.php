@@ -48,7 +48,7 @@ class ConstructController extends Controller
      *     requirements={"sort" = "name|type"},
      *     defaults={"_format" = "html", "type" = "all", "sort" = "name", "order" = "asc"})
      * @REST\Get("/{type}/sort/{sort}/{order}", name="_type_sort",
-     *     requirements={"type" = "plasmid|genomic|synthetic|all"},
+     *     requirements={"type" = "plasmid|genomic|synthetic|all", "sort" = "name|type"},
      *     defaults={"_format" = "html", "type" = "all", "order" = "asc"})
      *
      * @param  Request     $request
@@ -105,6 +105,9 @@ class ConstructController extends Controller
      * @REST\View()
      * @REST\Route("/{id}/delete", methods={"DELETE", "POST"}, requirements={"id"="\d+"}, defaults={"_format" = "html"})
      * @REST\Delete("/{id}", name="_rest", requirements={"id"="\d+"}, defaults={"_format" = "html"})
+     *
+     * @param  Request     $request
+     * @return View
      */
     public function deleteAction(Request $request)
     {

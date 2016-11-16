@@ -18,6 +18,7 @@
 
 namespace Bluemesa\Bundle\ConstructBundle\Search;
 
+use Bluemesa\Bundle\ConstructBundle\Entity\Construct;
 use JMS\Serializer\Annotation as Serializer;
 
 use Bluemesa\Bundle\SearchBundle\Search\ACLSearchQuery;
@@ -50,7 +51,7 @@ class SearchQuery extends ACLSearchQuery
      * {@inheritdoc}
      */
     public function getEntityClass() {
-        return 'Bluemesa\Bundle\ConstructBundle\Entity\Construct';
+        return Construct::class;
     }
 
     /**
