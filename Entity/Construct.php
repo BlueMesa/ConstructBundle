@@ -320,7 +320,7 @@ class Construct extends SecureEntity
     /**
      * @param File $sequenceFile
      */
-    public function setSequenceFile(File $sequenceFile)
+    public function setSequenceFile(File $sequenceFile = null)
     {
         $this->sequenceFile = $sequenceFile;
 
@@ -340,7 +340,7 @@ class Construct extends SecureEntity
     /**
      * @param string $sequenceName
      */
-    public function setSequenceName(string $sequenceName)
+    public function setSequenceName($sequenceName)
     {
         $this->sequenceName = $sequenceName;
     }
