@@ -15,6 +15,7 @@ use Bluemesa\Bundle\ConstructBundle\Entity\Construct;
 use Bluemesa\Bundle\ConstructBundle\Entity\RestrictionLigation;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -115,6 +116,10 @@ class ConstructType extends AbstractType
                         'label' => 'Info URL',
                         'required' => false,
                         'attr' => array('placeholder' => 'Paste address here')))
+                ->add('sequenceFile', FileType::class, array(
+                        'label' => 'Sequence file',
+                        'required' => false,
+                        'file_field' => 'sequenceFile'))
                 ->addEventListener(
                     FormEvents::PRE_SET_DATA,
                     array($this, 'onPreSetData'))

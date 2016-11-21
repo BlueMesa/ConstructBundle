@@ -23,7 +23,9 @@ use Bluemesa\Bundle\CoreBundle\Entity\NamedTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 
 /**
@@ -31,6 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity(repositoryClass="Bluemesa\Bundle\ConstructBundle\Repository\ConstructRepository")
  * @Serializer\ExclusionPolicy("all")
+ * @Vich\Uploadable
  *
  * @author Radoslaw Kamil Ejsmont <radoslaw@ejsmont.net>
  */
@@ -96,11 +99,33 @@ class Construct extends SecureEntity
     protected $tubes;
 
     /**
-     * @ORM\OneToOne(targetEntity="CloningMethod", mappedBy="construct", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\OneToOne(targetEntity="CloningMethod", mappedBy="construct",
+     *     cascade={"persist", "remove"}, orphanRemoval=true)
      *
      * @var CloningMethod
      */
     protected $method;
+
+    /**
+     * @Vich\UploadableField(mapping="sequence_file", fileNameProperty="sequenceName")
+     *
+     * @var File
+     */
+    protected $sequenceFile;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     *
+     * @var string
+     */
+    protected $sequenceName;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     *
+     * @var \DateTime
+     */
+    protected $updatedAt;
 
     
     /**
@@ -110,7 +135,6 @@ class Construct extends SecureEntity
     public function __construct()
     {
         $this->tubes = new ArrayCollection();
-        $this->applications = new ArrayCollection();        
         $this->type = 'plasmid';
     }
     
@@ -283,5 +307,41 @@ class Construct extends SecureEntity
         if ($method->getConstruct() !== $this) {
             $method->setConstruct($this);
         }
+    }
+
+    /**
+     * @return File
+     */
+    public function getSequenceFile()
+    {
+        return $this->sequenceFile;
+    }
+
+    /**
+     * @param File $sequenceFile
+     */
+    public function setSequenceFile(File $sequenceFile)
+    {
+        $this->sequenceFile = $sequenceFile;
+
+        if ($sequenceFile) {
+            $this->updatedAt = new \DateTime('now');
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getSequenceName()
+    {
+        return $this->sequenceName;
+    }
+
+    /**
+     * @param string $sequenceName
+     */
+    public function setSequenceName(string $sequenceName)
+    {
+        $this->sequenceName = $sequenceName;
     }
 }
