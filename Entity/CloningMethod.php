@@ -27,8 +27,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @author Radoslaw Kamil Ejsmont <radoslaw@ejsmont.net>
  */
-class CloningMethod extends Entity
+abstract class CloningMethod extends Entity
 {
+    const NAME = "cloning";
+
     /**
      * @ORM\OneToOne(targetEntity="Construct", inversedBy="method")
      * @ORM\JoinColumn(onDelete="CASCADE")
@@ -39,14 +41,6 @@ class CloningMethod extends Entity
      */
     protected $construct;
 
-    
-    /**
-     * Construct CloningMethod
-     */ 
-    public function __construct()
-    {
-
-    }
 
     /**
      * Get construct
@@ -67,5 +61,10 @@ class CloningMethod extends Entity
         if ($construct->getMethod() !== $this) {
             $construct->setMethod($this);
         }
+    }
+
+    public function getName()
+    {
+        return static::NAME;
     }
 }

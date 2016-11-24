@@ -1,0 +1,27 @@
+{% import "BluemesaSiteTemplateBundle:Macros:show.html.twig" as s %}
+
+{{ s.row("Cloning method", "Restriction - ligation") }}
+<div class="form-group">
+  <a class="control-label col-sm-3 collapse-toggle" data-toggle="collapse" href="#vector"><strong>Vector</strong></a>
+</div>
+<div id="vector" class="collapse">
+  {{ s.row("Name", method.vector) }}
+  {{ s.row("Size", method.vectorSize ~ ((method.vectorSize > 0) ? "kb" : "")) }}
+</div>
+<div class="form-group">
+  <a class="control-label col-sm-3 collapse-toggle" data-toggle="collapse" href="#insert"><strong>Insert</strong></a>
+</div>
+<div id="insert" class="collapse">
+  {{ s.row("Name", method.insert) }}
+  {{ s.row("Size", method.insertSize ~ ((method.insertSize > 0) ? "kb" : "")) }}
+  {{ s.row("Orientation", method.insertOrientationText) }}
+</div>
+<div class="form-group">
+  <a class="control-label col-sm-3 collapse-toggle" data-toggle="collapse" href="#restriction"><strong>Restriction sites</strong></a>
+</div>
+<div id="restriction" class="collapse">
+  {{ s.row("Upstream vector", method.vectorUpstreamSite) }}
+  {{ s.row("Downstream vector", method.vectorDownstreamSite) }}
+  {{ s.row("Upstream insert", method.insertUpstreamSite) }}
+  {{ s.row("Downstream insert", method.insertDownstreamSite) }}
+</div>

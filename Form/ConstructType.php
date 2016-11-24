@@ -92,19 +92,22 @@ class ConstructType extends AbstractType
                 ->add('type', ChoiceType::class, array(
                         'label' => 'Type',
                         'required'  => true,
-                        'choices' => self::$types
+                        'choices' => Construct::$types
                         ))
+                ->add('resistances', ChoiceType::class, array(
+                        'label' => 'Resistances',
+                        'required'  => true,
+                        'multiple' => true,
+                        'choices' => Construct::$antibiotics))
                 ->add('size', NumberType::class, array(
                         'label'     => 'Size',
                         'attr'      => array('class' => 'input-small'),
                         'widget_addon_append' => array(
                                 'text' => 'kb',
                         )))
-                ->add('resistances', ChoiceType::class, array(
-                        'label' => 'Resistances',
-                        'required'  => true,
-                        'multiple' => true,
-                        'choices' => self::$antibiotics))
+                ->add('sequenceFile', VichFileType::class, array(
+                        'label' => 'Sequence file',
+                        'required' => false))
                 ->add('notes', TextareaType::class, array(
                         'label' => 'Notes',
                         'required' => false))
@@ -115,9 +118,6 @@ class ConstructType extends AbstractType
                         'label' => 'Info URL',
                         'required' => false,
                         'attr' => array('placeholder' => 'Paste address here')))
-                ->add('sequenceFile', VichFileType::class, array(
-                        'label' => 'Sequence file',
-                        'required' => false))
                 ->addEventListener(
                     FormEvents::PRE_SET_DATA,
                     array($this, 'onPreSetData'))

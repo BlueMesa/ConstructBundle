@@ -127,7 +127,47 @@ class Construct extends SecureEntity
      */
     protected $updatedAt;
 
-    
+    /**
+     * @var array
+     */
+    public static $types = array(
+        'Plasmid' => 'plasmid',
+        'Fosmid' => 'fosmid',
+        'BAC' => 'BAC',
+        'Cosmid' => 'cosmid',
+        'Linear DNA' => 'linear',
+    );
+
+    /**
+     * @var array
+     */
+    public static $antibiotics = array(
+        'Ampicillin' => 'Amp',
+        'Blasticidin' => 'Bla',
+        'Bleocin' => 'Ble',
+        'Chroramphenicol'  => 'Cm',
+        'Coumermycin' => 'Com',
+        'D-cycloserine' => 'DCS',
+        'Erythromycin' => 'Ery',
+        'Geneticin' => 'Gen',
+        'Gentamycin' => 'Gta',
+        'Hygromycin' => 'Hgr',
+        'Kanamycin' => 'Kan',
+        'Kasugamycin' => 'Kas',
+        'Nalidixic acid' => 'Nal',
+        'Neomycin' => 'Neo',
+        'Penicillin' => 'Pen',
+        'Puromycin' => 'Pur',
+        'Rifampicin' => 'Rif',
+        'Spectinomycin' => 'Spe',
+        'Streptomycin' => 'Str',
+        'Tetracycline' => 'Tet',
+        'Triclosan' => 'Tri',
+        'Trimethoprim' => 'Tmp',
+        'Zeocin' => 'Zeo',
+    );
+
+
     /**
      * Construct Antibody
      * 
@@ -180,6 +220,26 @@ class Construct extends SecureEntity
     public function getResistances()
     {
         return $this->resistances;
+    }
+
+    /**
+     * @return array
+     */
+    public function getResistancesText()
+    {
+        $antibiotics = array_flip(static::$antibiotics);
+        $string = "";
+
+        foreach ($this->resistances as $resistance) {
+            if (array_key_exists($resistance, $antibiotics)) {
+                if (! empty($string)) {
+                    $string .= ", ";
+                }
+                $string .= $antibiotics[$resistance] .  " (" . $resistance . ")";
+            }
+        }
+
+        return $string;
     }
 
     /**

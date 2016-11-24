@@ -27,6 +27,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class RestrictionLigation extends CloningMethod
 {
+    const NAME = "restriction_ligation";
+
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Serializer\Expose
@@ -167,7 +169,7 @@ class RestrictionLigation extends CloningMethod
     /**
      * @return boolean
      */
-    public function isInsertOrientation()
+    public function getInsertOrientation()
     {
         return $this->insertOrientation;
     }
@@ -178,6 +180,18 @@ class RestrictionLigation extends CloningMethod
     public function setInsertOrientation($insertOrientation)
     {
         $this->insertOrientation = $insertOrientation;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getInsertOrientationtext()
+    {
+        if (empty($this->insertOrientation)) {
+            return 'Unknown';
+        } else {
+            return $this->insertOrientation ? 'Positive' : 'Negative';
+        }
     }
 
     /**

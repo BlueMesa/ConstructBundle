@@ -9,7 +9,41 @@
 
 {% block modal_body %}
   {{ s.row("Type", entity.type) }}
-  {{ s.row("Size", entity.size) }}
+  {{ s.row("Resistances", entity.resistancesText) }}
+  {{ s.row("Size", entity.size ~ ((entity.size > 0) ? "kb" : "")) }}
+  <div class="form-group">
+    <label class="control-label col-sm-3">Sequence file</label>
+    <div class="col-sm-9">
+        <span class="input-text">
+          {% if entity.sequenceFile is not empty %}
+            <a href="{{ vich_uploader_asset(entity, 'sequenceFile') }}" target="_blank">{{ entity.sequenceFile.filename }}</a>
+          {% endif %}
+        </span>
+    </div>
+  </div>
+  <div class="form-group">
+    <a class="control-label col-sm-3 collapse-toggle" data-toggle="collapse" href="#details"><strong>Details</strong></a>
+  </div>
+  <div id="details" class="collapse">
+    {{ s.row("Notes", entity.notes) }}
+  </div>
+  <div class="form-group">
+    <a class="control-label col-sm-3 collapse-toggle" data-toggle="collapse" href="#vendor"><strong>Vendor information</strong></a>
+  </div>
+  <div id="vendor" class="collapse">
+    {{ s.row("Vendor", entity.vendor) }}
+    <div class="form-group">
+      <label class="control-label col-sm-3">Info URL</label>
+      <div class="col-sm-9">
+        <span class="input-text">
+          {% if entity.infoURL is not empty %}
+            <a href="{{ entity.infoURL }}" target="_blank">{{ entity.infoURL }}</a>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+  {% include "BluemesaConstructBundle:Construct:" ~ entity.method.name ~ ".html.twig" with {'method': entity.method} %}
 {% endblock modal_body %}
 
 {% block modal_footer %}
