@@ -43,7 +43,9 @@
       </div>
     </div>
   </div>
-  {% include "BluemesaConstructBundle:Construct:" ~ entity.method.name ~ ".html.twig" with {'method': entity.method} %}
+  {% if entity.method is not empty %}
+    {% include "BluemesaConstructBundle:Construct:" ~ entity.method.name ~ ".html.twig" with {'method': entity.method} %}
+  {%  endif %}
 {% endblock modal_body %}
 
 {% block modal_footer %}

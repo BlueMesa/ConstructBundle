@@ -34,6 +34,7 @@ class ConstructRepository extends SearchableRepository
     public function createIndexQueryBuilder()
     {
         $qb = parent::createIndexQueryBuilder();
+        $qb->addSelect('m')->leftJoin('e.method', 'm');
 
         if ($this->filter instanceof ConstructFilter) {
             $expr = $this->getConstructFilterExpression($this->filter->getType());
