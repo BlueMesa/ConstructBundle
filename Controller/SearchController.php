@@ -1,45 +1,40 @@
 <?php
 
 /*
- * Copyright 2011 Radoslaw Kamil Ejsmont <radoslaw@ejsmont.net>
+ * This file is part of the ConstructBundle.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Copyright (c) 2016 BlueMesa LabDB Contributors <labdb@bluemesa.eu>
  *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Bluemesa\Bundle\ConstructBundle\Controller;
 
 
-use Bluemesa\Bundle\AclBundle\DependencyInjection\AuthorizationCheckerAwareTrait;
-use Bluemesa\Bundle\AclBundle\DependencyInjection\TokenStorageAwareTrait;
-use Bluemesa\Bundle\SearchBundle\Controller\SearchController as BaseSearchController;
+use Bluemesa\Bundle\SearchBundle\Controller\Annotations\Search;
+use Bluemesa\Bundle\SearchBundle\Controller\SearchControllerTrait;
 use Bluemesa\Bundle\ConstructBundle\Search\SearchQuery;
 use Bluemesa\Bundle\ConstructBundle\Form\SearchType;
 use Bluemesa\Bundle\ConstructBundle\Form\AdvancedSearchType;
 use FOS\RestBundle\Controller\Annotations as REST;
+use FOS\RestBundle\View\View;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+
 
 /**
  * Search controller for the antibody bundle
  *
  * @REST\Prefix("/constructs/search")
  * @REST\NamePrefix("bluemesa_construct_search_")
+ * @Search(realm="construct")
  *
  * @author Radoslaw Kamil Ejsmont <radoslaw@ejsmont.net>
  */
-class SearchController extends BaseSearchController
+class SearchController extends Controller
 {
-    use TokenStorageAwareTrait, AuthorizationCheckerAwareTrait;
+    use SearchControllerTrait;
 
     /**
      * Render advanced search form
@@ -47,24 +42,25 @@ class SearchController extends BaseSearchController
      * @REST\Get("", defaults={"_format" = "html"}))
      * @REST\View()
      *
-     * @return Response
+     * @param  Request  $request
+     * @return View
      */
-    public function advancedAction()
+    public function advancedAction(Request $request)
     {
-        return parent::advancedAction();
+        return $this->getSearchHandler()->handleSearchAction($request);
     }
 
     /**
      * Render quick search form
      *
-     * @REST\Get("/simple", defaults={"_format" = "html"}))
      * @REST\View()
      *
-     * @return Response
+     * @param  Request  $request
+     * @return View
      */
-    public function searchAction()
+    public function searchAction(Request $request)
     {
-        return parent::searchAction();
+        return $this->getSearchHandler()->handleSearchAction($request);
     }
 
     /**
