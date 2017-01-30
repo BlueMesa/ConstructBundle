@@ -12,11 +12,10 @@
 namespace Bluemesa\Bundle\ConstructBundle\Controller;
 
 
+use Bluemesa\Bundle\CoreBundle\Controller\Annotations\Paginate;
 use Bluemesa\Bundle\SearchBundle\Controller\Annotations\Search;
 use Bluemesa\Bundle\SearchBundle\Controller\SearchControllerTrait;
 use Bluemesa\Bundle\ConstructBundle\Search\SearchQuery;
-use Bluemesa\Bundle\ConstructBundle\Form\SearchType;
-use Bluemesa\Bundle\ConstructBundle\Form\AdvancedSearchType;
 use FOS\RestBundle\Controller\Annotations as REST;
 use FOS\RestBundle\View\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -28,7 +27,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @REST\Prefix("/constructs/search")
  * @REST\NamePrefix("bluemesa_construct_search_")
- * @Search(realm="construct")
+ * @Search(realm="bluemesa_constructs")
  *
  * @author Radoslaw Kamil Ejsmont <radoslaw@ejsmont.net>
  */
@@ -37,7 +36,7 @@ class SearchController extends Controller
     use SearchControllerTrait;
 
     /**
-     * Render advanced search form
+     * Render the search form
      *
      * @REST\Get("", defaults={"_format" = "html"}))
      * @REST\View()
@@ -45,22 +44,9 @@ class SearchController extends Controller
      * @param  Request  $request
      * @return View
      */
-    public function advancedAction(Request $request)
-    {
-        return $this->getSearchHandler()->handleSearchAction($request);
-    }
-
-    /**
-     * Render quick search form
-     *
-     * @REST\View()
-     *
-     * @param  Request  $request
-     * @return View
-     */
     public function searchAction(Request $request)
     {
-        return $this->getSearchHandler()->handleSearchAction($request);
+        return $this->getSearchHandler()->handle($request);
     }
 
     /**
@@ -69,37 +55,14 @@ class SearchController extends Controller
      * @REST\Get("/result", defaults={"_format" = "html"}))
      * @REST\Post("/result", defaults={"_format" = "html"}))
      * @REST\View()
+     * @Paginate(25)
      *
      * @param  Request $request
-     * @return array
+     * @return View
      */
     public function resultAction(Request $request)
     {
-        return parent::resultAction($request);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getSearchForm()
-    {
-        return SearchType::class;
-    }
-    
-    /**
-     * {@inheritdoc}
-     */
-    protected function getAdvancedSearchForm()
-    {
-        return AdvancedSearchType::class;
-    }
-    
-    /**
-     * {@inheritdoc}
-     */
-    protected function getSearchRealm()
-    {
-        return 'bluemesa_constructs';
+        return $this->getSearchHandler()->handle($request);
     }
     
     /**

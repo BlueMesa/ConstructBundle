@@ -11,6 +11,7 @@
 
 namespace Bluemesa\Bundle\ConstructBundle\Controller;
 
+use Bluemesa\Bundle\CoreBundle\Controller\Annotations\Paginate;
 use Bluemesa\Bundle\CrudBundle\Controller\Annotations as CRUD;
 use Bluemesa\Bundle\CrudBundle\Controller\CrudControllerTrait;
 use FOS\RestBundle\Controller\Annotations as REST;
@@ -37,7 +38,6 @@ class ConstructController extends Controller
 
     /**
      * @CRUD\Action("index")
-     * @CRUD\Paginate(25)
      * @CRUD\Filter("Bluemesa\Bundle\ConstructBundle\Filter\ConstructFilter", redirectRoute="bluemesa_construct_index_type_sort")
      * @REST\View()
      * @REST\Get("", defaults={"_format" = "html"}))
@@ -50,6 +50,7 @@ class ConstructController extends Controller
      * @REST\Get("/{type}/sort/{sort}/{order}", name="_type_sort",
      *     requirements={"type" = "plasmid|genomic|synthetic|all", "sort" = "name|type"},
      *     defaults={"_format" = "html", "type" = "all", "order" = "asc"})
+     * @Paginate(25)
      *
      * @param  Request     $request
      * @return View

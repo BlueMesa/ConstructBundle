@@ -20,6 +20,7 @@ namespace Bluemesa\Bundle\ConstructBundle\Form;
 
 use Bluemesa\Bundle\ConstructBundle\Search\SearchQuery;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -37,16 +38,49 @@ class SearchType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('terms', TextType::class, array(
-                'required' => false,
-                'horizontal' => false,
-                'label_render' => false,
-                'attr'     => array(
-                    'form'        => 'search-form',
-                    'placeholder' => 'Search'
+        if ($options['simple']) {
+            $builder->add('terms', TextType::class, array(
+                    'required' => false,
+                    'horizontal' => false,
+                    'label_render' => false,
+                    'attr'     => array(
+                        'form'        => 'search-form',
+                        'placeholder' => 'Search'
+                    )
                 )
-            )
-        )->add('filter', HiddenType::class, array('required' => false));
+            )->add('filter', HiddenType::class, array('required' => false));
+        } else {
+            $builder->add('terms', TextType::class, array(
+                    'label' => 'Include terms',
+                    'required' => false,
+                    'attr' => array(
+                        'class' => 'input-block-level',
+                        'placeholder' => 'separate terms with space'
+                    )
+                )
+            )->add('excluded', TextType::class, array(
+                    'label' => 'Exclude terms',
+                    'required' => false,
+                    'attr' => array(
+                        'class' => 'input-block-level',
+                        'placeholder' => 'separate terms with space'
+                    )
+                )
+            )->add('filter', ChoiceType::class, array(
+                    'label' => 'Scope',
+                    'choices' => array(
+                        'Plasmids'   => 'plasmid',
+                        'Genomic constructs' => 'genomic',
+                        'Linear DNA' => 'linear',
+                    ),
+                    'expanded' => true,
+                    'placeholder' => 'All',
+                    'empty_data' => 'all',
+                    'required' => false
+                )
+            );
+        }
+
     }
     
     /**
@@ -55,7 +89,8 @@ class SearchType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-                'data_class' => SearchQuery::class
+                'data_class' => SearchQuery::class,
+                'simple' => false
             )
         );
     }
