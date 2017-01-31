@@ -1,47 +1,5 @@
-<form id="search-form" action="{{ path('bluemesa_construct_search_result') }}" method="post" class="navbar-form navbar-right" style="width:25%">
-  <div class="form-group">
-    <div class="input-group">
-      {{ form_widget(form.terms) }}
-      <div class="input-group-btn">
-        <button class="btn btn-default" onclick="$('#search-form').submit();">
-          <i class="fa fa-search"></i>
-        </button>
-        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu pull-right">
-          <li class="first">
-            <a href="#" onclick="$('#search_filter').val('all'); $('#search-form').submit();">
-              <b>Search all</b>
-            </a>
-          </li>
-          <li>
-            <a href="#" onclick="$('#search_filter').val('plasmid'); $('#search-form').submit();">
-              Search plasmids
-            </a>
-          </li>
-          <li>
-            <a href="#" onclick="$('#search_filter').val('genomic'); $('#search-form').submit();">
-              Search genomic constructs
-            </a>
-          </li>
-          <li>
-            <a href="#" onclick="$('#search_filter').val('linear'); $('#search-form').submit();">
-              Search linear DNA
-            </a>
-          </li>
-          <li class="divider"></li>
-          <li class="last">
-            <a href="{{ path('bluemesa_construct_search_search') }}">
-              Advanced search
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  {{ form_rest(form) }}
-</form>
-{% form_theme form _self %}
-{% block form_widget_compound %}{{ form_rest(form) }}{% endblock form_widget_compound %}
-{% block form_row %}{{ form_widget(form) }}{% endblock %}
+{% if form.vars.simple %}
+    {% include 'BluemesaConstructBundle:Search:simple.html.twig' %}
+{% else %}
+    {% include 'BluemesaConstructBundle:Search:advanced.html.twig' %}
+{% endif %}

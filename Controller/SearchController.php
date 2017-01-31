@@ -15,7 +15,6 @@ namespace Bluemesa\Bundle\ConstructBundle\Controller;
 use Bluemesa\Bundle\CoreBundle\Controller\Annotations\Paginate;
 use Bluemesa\Bundle\SearchBundle\Controller\Annotations\Search;
 use Bluemesa\Bundle\SearchBundle\Controller\SearchControllerTrait;
-use Bluemesa\Bundle\ConstructBundle\Search\SearchQuery;
 use FOS\RestBundle\Controller\Annotations as REST;
 use FOS\RestBundle\View\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -63,33 +62,5 @@ class SearchController extends Controller
     public function resultAction(Request $request)
     {
         return $this->getSearchHandler()->handle($request);
-    }
-    
-    /**
-     * {@inheritdoc}
-     */
-    protected function createSearchQuery($advanced = false)
-    {
-        $searchQuery = new SearchQuery($advanced);
-        $searchQuery->setTokenStorage($this->getTokenStorage());
-        $searchQuery->setAuthorizationChecker($this->getAuthorizationChecker());
-
-        return $searchQuery;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function loadSearchQuery()
-    {
-        $searchQuery = parent::loadSearchQuery();
-        
-        if (! $searchQuery instanceof SearchQuery) {
-            throw $this->createNotFoundException();
-        }
-        
-        $searchQuery->setTokenStorage($this->getTokenStorage());
-        
-        return $searchQuery;
     }
 }
