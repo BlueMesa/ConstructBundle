@@ -19,10 +19,12 @@
 namespace Bluemesa\Bundle\ConstructBundle\Entity;
 
 use Bluemesa\Bundle\AclBundle\Entity\SecureEntity;
+use Bluemesa\Bundle\CoreBundle\Entity\MutableIdEntityInterface;
 use Bluemesa\Bundle\CoreBundle\Entity\NamedTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -34,13 +36,14 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ORM\Entity(repositoryClass="Bluemesa\Bundle\ConstructBundle\Repository\ConstructRepository")
  * @Serializer\ExclusionPolicy("all")
  * @Vich\Uploadable
+ * @UniqueEntity("id")
  *
  * @author Radoslaw Kamil Ejsmont <radoslaw@ejsmont.net>
  */
-class Construct extends SecureEntity
+class Construct extends SecureEntity implements MutableIdEntityInterface
 { 
     use NamedTrait;
-    
+
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
      * @Serializer\Expose
@@ -177,7 +180,15 @@ class Construct extends SecureEntity
         $this->tubes = new ArrayCollection();
         $this->type = 'plasmid';
     }
-    
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
     /**
      * Get type
      * 
@@ -223,7 +234,7 @@ class Construct extends SecureEntity
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function getResistancesText()
     {
