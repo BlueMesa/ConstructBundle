@@ -11,18 +11,17 @@
 
 namespace Bluemesa\Bundle\ConstructBundle\Form;
 
-use Bluemesa\Bundle\ConstructBundle\Entity\RestrictionLigation;
+use Bluemesa\Bundle\ConstructBundle\Entity\Gateway;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * RestrictionLigationType class
+ * GatewayType class
  *
  * @author Radoslaw Kamil Ejsmont <radoslaw@ejsmont.net>
  */
-class RestrictionLigationType extends AbstractType
+class GatewayType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -30,17 +29,11 @@ class RestrictionLigationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('vector', Type\VectorType::class, array(
-                        'label'     => 'Vector'))
+                        'label'     => 'Entry vector'))
                 ->add('insert', Type\InsertType::class, array(
                         'label'     => 'Insert'))
-                ->add('vectorUpstreamSite', TextType::class, array(
-                        'label'     => 'Upstream vector site'))
-                ->add('vectorDownstreamSite', TextType::class, array(
-                        'label'     => 'Downstream vector site'))
-                ->add('insertUpstreamSite', TextType::class, array(
-                        'label'     => 'Upstream insert site'))
-                ->add('insertDownstreamSite', TextType::class, array(
-                        'label'     => 'Downstream insert site'));
+                ->add('destinationVector', Type\VectorType::class, array(
+                        'label'     => 'Destination vector'));
     }
 
     /**
@@ -49,7 +42,7 @@ class RestrictionLigationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => RestrictionLigation::class,
+            'data_class' => Gateway::class,
         ));
     }
 }

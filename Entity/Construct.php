@@ -212,8 +212,16 @@ class Construct extends SecureEntity implements MutableIdEntityInterface
      * 
      * @return float
      */
-    public function getSize() {
-        return $this->size;
+    public function getSize()
+    {
+        $method = $this->getMethod();
+        if ($method instanceof SizedMethodInterface) {
+            $size = $method->getSize();
+        } else {
+            $size = null;
+        }
+
+        return ($size !== null) ? $method->getSize() : $this->size;
     }
 
     /**
@@ -223,6 +231,23 @@ class Construct extends SecureEntity implements MutableIdEntityInterface
      */
     public function setSize($size) {
         $this->size = $size;
+    }
+
+    /**
+     * Is construct size computed from cloning method
+     *
+     * @return bool
+     */
+    public function isSizeComputed()
+    {
+        $method = $this->getMethod();
+        if ($method instanceof SizedMethodInterface) {
+            $size = $method->getSize();
+        } else {
+            $size = null;
+        }
+
+        return ($size !== null);
     }
 
     /**

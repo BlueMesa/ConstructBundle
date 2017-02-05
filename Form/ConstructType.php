@@ -12,7 +12,9 @@
 namespace Bluemesa\Bundle\ConstructBundle\Form;
 
 use Bluemesa\Bundle\ConstructBundle\Entity\Construct;
+use Bluemesa\Bundle\ConstructBundle\Entity\Gateway;
 use Bluemesa\Bundle\ConstructBundle\Entity\RestrictionLigation;
+use Bluemesa\Bundle\ConstructBundle\Entity\TopoTa;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -39,47 +41,15 @@ class ConstructType extends AbstractType
         'Restriction-Ligation' => array(
             'entity' => RestrictionLigation::class,
             'form' => RestrictionLigationType::class
+        ),
+        'Gateway' => array(
+            'entity' => Gateway::class,
+            'form' => GatewayType::class
+        ),
+        'TOPO/TA cloning' => array(
+            'entity' => TopoTa::class,
+            'form' => TopoTaType::class
         )
-    );
-
-    /**
-     * @var array
-     */
-    private static $types = array(
-        'Plasmid' => 'plasmid',
-        'Fosmid' => 'fosmid',
-        'BAC' => 'BAC',
-        'Cosmid' => 'cosmid',
-        'Linear DNA' => 'linear',
-    );
-
-    /**
-     * @var array
-     */
-    private static $antibiotics = array(
-        'Ampicillin' => 'Amp',
-        'Blasticidin' => 'Bla',
-        'Bleocin' => 'Ble',
-        'Chroramphenicol'  => 'Cm',
-        'Coumermycin' => 'Com',
-        'D-cycloserine' => 'DCS',
-        'Erythromycin' => 'Ery',
-        'Geneticin' => 'Gen',
-        'Gentamycin' => 'Gta',
-        'Hygromycin' => 'Hgr',
-        'Kanamycin' => 'Kan',
-        'Kasugamycin' => 'Kas',
-        'Nalidixic acid' => 'Nal',
-        'Neomycin' => 'Neo',
-        'Penicillin' => 'Pen',
-        'Puromycin' => 'Pur',
-        'Rifampicin' => 'Rif',
-        'Spectinomycin' => 'Spe',
-        'Streptomycin' => 'Str',
-        'Tetracycline' => 'Tet',
-        'Triclosan' => 'Tri',
-        'Trimethoprim' => 'Tmp',
-        'Zeocin' => 'Zeo',
     );
 
     /**
@@ -100,7 +70,7 @@ class ConstructType extends AbstractType
                         ))
                 ->add('resistances', ChoiceType::class, array(
                         'label' => 'Resistances',
-                        'required'  => true,
+                        'required'  => false,
                         'multiple' => true,
                         'choices' => Construct::$antibiotics))
                 ->add('size', NumberType::class, array(
@@ -140,7 +110,7 @@ class ConstructType extends AbstractType
             $form->add('cloningMethod', ChoiceType::class, array(
                         'label' => 'Cloning method',
                         'placeholder' => 'Select cloning method',
-                        'required'  => true,
+                        'required'  => false,
                         'mapped' => false,
                         'choices' => $this->getMethodsJSON()
             ));
