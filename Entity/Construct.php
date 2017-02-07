@@ -22,6 +22,7 @@ use Bluemesa\Bundle\AclBundle\Entity\SecureEntity;
 use Bluemesa\Bundle\CoreBundle\Entity\MutableIdEntityInterface;
 use Bluemesa\Bundle\CoreBundle\Entity\NamedTrait;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -31,7 +32,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 
 /**
- * Antibody class
+ * Construct class
  *
  * @ORM\Entity(repositoryClass="Bluemesa\Bundle\ConstructBundle\Repository\ConstructRepository")
  * @Serializer\ExclusionPolicy("all")
@@ -78,6 +79,18 @@ class Construct extends SecureEntity implements MutableIdEntityInterface
     protected $notes;
 
     /**
+     * @ORM\ManyToMany(targetEntity="ConstructTag", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="entity_tags",
+     *     joinColumns={@ORM\JoinColumn(name="entity_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="id")}
+     * )
+     * @Serializer\Expose
+     *
+     * @var Collection
+     */
+    protected $tags;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Serializer\Expose
      *
@@ -97,7 +110,7 @@ class Construct extends SecureEntity implements MutableIdEntityInterface
     /**
      * @ORM\OneToMany(targetEntity="ConstructTube", mappedBy="construct", cascade={"persist"}, fetch="EXTRA_LAZY")
      *
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     protected $tubes;
 
@@ -178,6 +191,7 @@ class Construct extends SecureEntity implements MutableIdEntityInterface
     public function __construct()
     {
         $this->tubes = new ArrayCollection();
+        $this->tags = new ArrayCollection();
         $this->type = 'plasmid';
     }
 
@@ -286,8 +300,6 @@ class Construct extends SecureEntity implements MutableIdEntityInterface
         $this->resistances = $resistances;
     }
 
-
-
     /**
      * Get notes
      *
@@ -306,6 +318,41 @@ class Construct extends SecureEntity implements MutableIdEntityInterface
     public function setNotes($notes)
     {
         $this->notes = $notes;
+    }
+
+    /**
+     * Get tags
+     *
+     * @return Collection
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * Add tag
+     *
+     * @param ConstructTag $tag
+     */
+    public function addTag(ConstructTag $tag)
+    {
+        $tags = $this->getTags();
+        if (null !== $tag) {
+            if (! $tags->contains($tag)) {
+                $tags->add($tag);
+            }
+        }
+    }
+
+    /**
+     * Remove tag
+     *
+     * @param ConstructTag $tag
+     */
+    public function removeTag(ConstructTag $tag)
+    {
+        $this->getTags()->removeElement($tag);
     }
 
     /**

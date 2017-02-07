@@ -12,9 +12,12 @@
 namespace Bluemesa\Bundle\ConstructBundle\Form;
 
 use Bluemesa\Bundle\ConstructBundle\Entity\Construct;
+use Bluemesa\Bundle\ConstructBundle\Entity\ConstructTag;
 use Bluemesa\Bundle\ConstructBundle\Entity\Gateway;
 use Bluemesa\Bundle\ConstructBundle\Entity\RestrictionLigation;
 use Bluemesa\Bundle\ConstructBundle\Entity\TopoTa;
+use Bluemesa\Bundle\ConstructBundle\Form\Type\TagsType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -85,6 +88,12 @@ class ConstructType extends AbstractType
                 ->add('notes', TextareaType::class, array(
                         'label' => 'Notes',
                         'required' => false))
+                ->add('tags', TagsType::class, array(
+                        'label' => 'Tags',
+                        'required' => false,
+                        'multiple' => true,
+                        'class' => ConstructTag::class,
+                        'attr' => array('class' => 'tags')))
                 ->add('vendor', TextType::class, array(
                         'label' => 'Vendor',
                         'required' => false))
