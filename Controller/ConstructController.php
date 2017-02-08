@@ -45,10 +45,10 @@ class ConstructController extends Controller
      *     requirements={"type" = "plasmid|genomic|synthetic|all"},
      *     defaults={"_format" = "html"}))
      * @REST\Get("/sort/{sort}/{order}", name="_sort",
-     *     requirements={"sort" = "name|type"},
-     *     defaults={"_format" = "html", "type" = "all", "sort" = "name", "order" = "asc"})
+     *     requirements={"sort" = "id|name|type"},
+     *     defaults={"_format" = "html", "type" = "all", "sort" = "id", "order" = "asc"})
      * @REST\Get("/{type}/sort/{sort}/{order}", name="_type_sort",
-     *     requirements={"type" = "plasmid|genomic|synthetic|all", "sort" = "name|type"},
+     *     requirements={"type" = "plasmid|genomic|synthetic|all", "sort" = "id|name|type"},
      *     defaults={"_format" = "html", "type" = "all", "order" = "asc"})
      * @Paginate(25)
      *

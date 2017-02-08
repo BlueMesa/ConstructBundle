@@ -57,13 +57,13 @@ class ConstructFilter extends SecureListFilter implements SortFilterInterface, R
         parent::__construct($request, $authorizationChecker, $tokenStorage);
         if (null !== $request) {
             $this->setAccess($request->get('access', 'public'));
-            $this->setSort($request->get('sort', 'name'));
+            $this->setSort($request->get('sort', 'id'));
             $this->setOrder($request->get('order', 'asc'));
             $this->setType($request->get('type', 'all'));
             $this->redirect = ($request->get('resolver', 'off') == 'on');
         } else {
             $this->access = 'public';
-            $this->sort = 'name';
+            $this->sort = 'id';
             $this->order = 'asc';
             $this->type = 'all';
             $this->redirect = false;

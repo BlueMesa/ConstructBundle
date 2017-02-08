@@ -50,8 +50,15 @@
             <ul>
               <li>
                 <label>
+                  <input type="radio" name="sort" id="sort_id" value="id"
+                          {{ (filter is not defined or filter.sort == 'id') ? 'checked' }} >
+                  Construct ID
+                </label>
+              </li>
+              <li>
+                <label>
                   <input type="radio" name="sort" id="sort_name" value="name"
-                          {{ (filter is not defined or filter.sort == 'name') ? 'checked' }} >
+                          {{ (filter is defined and filter.sort == 'name') ? 'checked' }} >
                   Construct name
                 </label>
               </li>

@@ -46,6 +46,9 @@ class ConstructRepository extends SearchableRepository
         if ($this->filter instanceof SortFilterInterface) {
             $order = ($this->filter->getOrder() == 'desc') ? 'DESC' : 'ASC';
             switch ($this->filter->getSort()) {
+                case 'id':
+                    $qb->orderBy('e.id', $order);
+                    break;
                 case 'name':
                     $qb->orderBy('e.name', $order);
                     break;

@@ -51,8 +51,7 @@ class SearchController extends Controller
     /**
      * Handle search result
      *
-     * @REST\Get("/result", defaults={"_format" = "html"}))
-     * @REST\Post("/result", defaults={"_format" = "html"}))
+     * @REST\Route("/result", methods={"POST", "GET"}, defaults={"_format" = "html"}))
      * @REST\View()
      * @Paginate(25)
      *
