@@ -18,14 +18,28 @@
 
 namespace Bluemesa\Bundle\ConstructBundle\Command;
 
-use Bluemesa\Bundle\AclBundle\Doctrine\SecureObjectManagerInterface;
+use Bluemesa\Bundle\AclBundle\Doctrine\SecureObjectManager;
 use Bluemesa\Bundle\ConstructBundle\Entity\Construct;
-use Doctrine\Common\Persistence\ObjectManager;
+use Bluemesa\Bundle\ConstructBundle\Entity\ConstructTag;
+use Bluemesa\Bundle\ConstructBundle\Entity\Gateway;
+use Bluemesa\Bundle\ConstructBundle\Entity\RestrictionLigation;
+use Bluemesa\Bundle\ConstructBundle\Entity\TopoTa;
+use Bluemesa\Bundle\ConstructBundle\Entity\VectorInsert;
+use Bluemesa\Bundle\CoreBundle\Doctrine\ObjectManager;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Id\AssignedGenerator;
+use Doctrine\ORM\Id\IdentityGenerator;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 
 /**
@@ -47,6 +61,11 @@ class ImportCommand extends Command
                 InputArgument::REQUIRED,
                 'Spreadsheet file to import from'
             )
+            ->addArgument(
+                'user',
+                InputArgument::REQUIRED,
+                'User who owns the constructs'
+            )
         ;
     }
 
@@ -58,12 +77,16 @@ class ImportCommand extends Command
         $questionHelper = $this->getHelperSet()->get('question');
         $this->container = $this->getApplication()->getKernel()->getContainer();
 
-        /** @var ObjectManager $dm */
+        /** @var EntityManager $dm */
         $dm = $this->container->get('doctrine')->getManager();
-        /** @var SecureObjectManagerInterface $om */
-        $om = $this->container->get('bluemesa.core.doctrine.registry')->getManagerForClass('Bluemesa\Bundle\ConstructBundle\Entity\Construct');
+        /** @var SecureObjectManager $om */
+        $om = $this->container->get('bluemesa.core.doctrine.registry')->getManagerForClass(Construct::class);
         /** @var \PHPExcel $excel */
         $excel = $this->container->get('phpexcel')->createPHPExcelObject($excelFile);
+        /** @var ObjectManager $tm */
+        $tm = $this->container->get('bluemesa.core.doctrine.registry')->getManagerForClass(ConstructTag::class);
+        $tr = $tm->getRepository(ConstructTag::class);
+
 
         $om->disableAutoAcl();
 
@@ -71,131 +94,184 @@ class ImportCommand extends Command
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
 
+        $constructsWithId = new ArrayCollection();
+        $constructsWithoutId = new ArrayCollection();
+        $tags = array();
 
-        for ($row = 2; $row <= $highestRow; $row++){
+        $output->writeln("Reading file " . $excelFile . "...");
+        $progress = new ProgressBar($output, $highestRow - 1);
+        $progress->start();
+
+        for ($row = 2; $row <= $highestRow; $row++) {
+            // Basic construct information
             $data = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, true, false);
             $construct = new Construct();
-            $construct->setId($data[0][0]);
-            $construct->setType($data[0][1] !== null ? $data[1] : 'plasmid');
-            $construct->setName($data[0][2]);
-            $construct->setResistances($data[0][19] !== null ?
-                explode(',', preg_replace('/\s+/', '', $data[0][19])) : null);
-            dump($construct);
-        }
+            $construct->setId($this->readInteger($data[0][0]));
+            $construct->setType($this->readString($data[0][1], 'plasmid'));
+            $construct->setName($this->readString($data[0][2]));
+            $construct->setResistances($this->readArray($data[0][3]));
+            $construct->setVendor($this->readString($data[0][5]));
+            $construct->setNotes($this->readString($data[0][7]));
 
-
-        $om->enableAutoAcl();
-
-
-        /**
-        $stocks = array();
-        $stock_register = array();
-        $vials = array();
-        
-        if ($file) {
-            while ($data = fgetcsv($file,0,"\t")) {
-                $trim = " \t\n\r\0\x0B\"";
-                $owner_name = trim($data[0],$trim);
-                $stock_name = trim($data[1],$trim);
-                $stock_genotype = trim($data[2],$trim);
-                $creator_name = trim($data[4],$trim);
-                $stock_notes = trim($data[5],$trim);
-                $stock_vendor = trim($data[6],$trim);
-                $stock_vendor_id = trim($data[7],$trim);
-                $stock_info_url = str_replace(" ","",trim($data[8],$trim));
-                $stock_verified = trim($data[9],$trim) == "yes" ? true : false;
-                $stock_vials_size = trim($data[10],$trim);
-                $stock_vials_size = $stock_vials_size == "" ? 'medium' : $stock_vials_size;
-                $stock_vials_number = (integer) trim($data[11],$trim);
-                $stock_vials_number = $stock_vials_number <= 0 ? 1 : $stock_vials_number;
-                $stock_vials_food = trim($data[12],$trim);
-                $stock_vials_food = $stock_vials_food == "" ? 'standard' : $stock_vials_food;
-                
-                $test = $om->getRepository('Bluemesa\Bundle\FliesBundle\Entity\Stock')->findOneByName($stock_name);
-                
-                if ((!in_array($stock_name, $stock_register))&&($creator_name == "")&&(null === $test)) {
-                    
-                    if (($stock_vendor != "")&&($stock_vendor_id != "")) {
-                        $output->write("Querying FlyBase for " . $stock_name . ": ");
-                        $stock_data = $this->getStockData($stock_vendor, $stock_vendor_id);
-                        if (count($stock_data) == 1) {
-                            $stock_genotype = $stock_data[0]['stock_genotype'];
-                            $stock_info_url = $stock_data[0]['stock_link'];
-                            $output->writeln("success");
-                        } elseif (count($stock_data) != 1) {
-                            $output->writeln("failed");
+            // Tags
+            $tagValues = explode(',', $data[0][6]);
+            foreach ($tagValues as $tagValue) {
+                $tagValue = trim($tagValue);
+                if (! empty($tagValue)) {
+                    if (isset($tags[$tagValue])) {
+                        $tag = $tags[$tagValue];
+                    } else {
+                        $tag = $tr->findOneByName($tagValue);
+                        if (null === $tag) {
+                            $tag = new ConstructTag();
+                            $tag->setName($tagValue);
                         }
+                        $tags[$tagValue] = $tag;
                     }
-                    
-                    $stock = new Stock();
-                    $stock->setName($stock_name);
-                    $stock->setGenotype($stock_genotype);
-                    $stock->setNotes($stock_notes);
-                    $stock->setVendor($stock_vendor);
-                    $stock->setVendorId($stock_vendor_id);
-                    $stock->setInfoURL($stock_info_url);
-                    $stock->setVerified($stock_verified);
-                    
-                    for ($i = 0; $i < $stock_vials_number - 1; $i++) {
-                        $vial = new StockVial();
-                        $stock->addVial($vial);
-                    }
-                    $stock_vials = $stock->getVials();
-                    foreach ($stock_vials as $vial) {
-                        $vial->setSize($stock_vials_size);
-                        $vial->setFood($stock_vials_food);
-                    }
-                    
-                    $stock_register[] = $stock_name;
-                    $stocks[$owner_name][$stock_name] = $stock;
-                } else {
-                    $vials[$owner_name][$stock_name]['size'] = $stock_vials_size;
-                    $vials[$owner_name][$stock_name]['number'] = $stock_vials_number;
-                    $vials[$owner_name][$stock_name]['food'] = $stock_vials_food;
+                    $construct->addTag($tag);
                 }
             }
+
+            // Cloning methods
+            switch(trim($data[0][8])) {
+                case 'restriction_ligation':
+                    $method = new RestrictionLigation();
+                    $method->setVectorUpstreamSite($this->readString($data[0][14]));
+                    $method->setVectorDownstreamSite($this->readString($data[0][15]));
+                    $method->setInsertUpstreamSite($this->readString($data[0][16]));
+                    $method->setInsertDownstreamSite($this->readString($data[0][17]));
+                    break;
+                case 'gateway':
+                    $method = new Gateway();
+                    $method->setVector($this->readString($data[0][18]));
+                    $method->setVectorSize($this->readFloat($data[0][19]));
+                    $method->setDestinationVector($this->readString($data[0][20]));
+                    $method->setDestinationVectorSize($this->readFloat($data[0][21]));
+                    break;
+                case 'topo_ta':
+                    $method = new TopoTa();
+                    $method->setBlunt($this->readBoolean($data[0][22]));
+                    break;
+                default:
+                    $method = null;
+            }
+
+            if ($method instanceof VectorInsert) {
+                if (! $method instanceof Gateway) {
+                    $method->setVector($this->readString($data[0][9]));
+                    $method->setVectorSize($this->readFloat($data[0][10]));
+                }
+                $method->setInsert($this->readString($data[0][11]));
+                $method->setInsertSize($this->readFloat($data[0][12]));
+                $method->setInsertOrientation($this->readOrientation($data[0][13]));
+            }
+            $construct->setMethod($method);
+
+            if ($construct->getId() !== null) {
+                $constructsWithId->add($construct);
+            } else {
+                $constructsWithoutId->add($construct);
+            }
+            $progress->advance();
+        }
+        $progress->finish();
+        $output->writeln(" <info>Done</info>");
+
+        $output->writeln("Writing entries to database");
+        $progress = new ProgressBar($output, count($tags) + $constructsWithId->count() + $constructsWithoutId->count());
+        $dm->getConnection()->beginTransaction();
+
+        foreach ($tags as $tag) {
+            $tm->persist($tag);
+            $progress->advance();
+        }
+        $tm->flush();
+
+        $metadata = $dm->getClassMetadata(Construct::class);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+        $metadata->setIdGenerator(new AssignedGenerator());
+
+        foreach ($constructsWithId as $construct) {
+            /** @var Construct $construct */
+            $om->persist($construct);
+            if (null !== $construct->getMethod()) {
+                $om->persist($construct->getMethod());
+            }
+            $progress->advance();
+        }
+        $om->flush();
+
+        $metadata = $dm->getClassMetadata(Construct::class);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGenerator(new IdentityGenerator());
+
+        foreach ($constructsWithoutId as $construct) {
+            /** @var Construct $construct */
+            $om->persist($construct);
+            if (null !== $construct->getMethod()) {
+                $om->persist($construct->getMethod());
+            }
+            $progress->advance();
+        }
+        $om->flush();
+        $progress->finish();
+        $output->writeln(" <info>Done</info>");
+
+        $output->write("Creating ACLs... ");
+        try {
+            $user = $this->container->get('user_provider')->loadUserByUsername($input->getArgument('user'));
+        } catch (UsernameNotFoundException $e) {
+            $user = null;
         }
 
-        $dm->getConnection()->beginTransaction();
-        
-        foreach ($stocks as $user_name => $user_stocks) {
-            
-            try {
-                $user = $this->container->get('user_provider')->loadUserByUsername($user_name);
-            } catch (UsernameNotFoundException $e) {
-                $user = null;
-            }
-            
-            if ($user instanceof UserInterface) {
-                $output->writeln("Adding stocks for user " . $user_name . ":");
-                $userStocks = new ArrayCollection();
-                $userVials = new ArrayCollection();
-                foreach ($user_stocks as $stock_name => $stock) {
-                    $om->persist($stock);
-                    $userStocks->add($stock);
-                    $userVials->add($stock->getVials());
-                    $output->write(".");
-                    fprintf($logfile,"%s\n",$stock->getName());
-                }
-                $om->flush();
-                $output->writeln("");
-                $output->write("Creating ACLs...");
-                $om->createACL($userStocks, $user);
-                $output->writeln(" done");
-            } else {
-                $output->writeln("<error>User " . $user_name . " does not exits. Skipping!</error>");
-            }
+        if ($user instanceof UserInterface) {
+            $om->createACL($constructsWithId, $user);
+            $om->createACL($constructsWithoutId, $user);
         }
-        
+        $output->writeln("<info>Done</info>");
+
         $message = 'Stocks and vials have been created. Commit?';
-        $question = new Question(sprintf('<question>' . $message . '</question>', 'yes'));
-        if ($questionHelper->ask($input, $output, $question) == 'yes') {
+        $question = new ConfirmationQuestion($message, false);
+        if ($questionHelper->ask($input, $output, $question)) {
             $dm->getConnection()->commit();
+            $output->writeln("<info>Import finished!</info>");
+            $message = "" . ($constructsWithId->count() + $constructsWithoutId->count()) .
+                " constructs were added to the database.";
+            $output->writeln($message);
         } else {
             $dm->getConnection()->rollback();
             $dm->getConnection()->close();
+            $output->writeln("<comment>Import cancelled!</comment>");
         }
+    }
 
-        **/
+    private function readString($string, $default = null) {
+        $string = trim($string);
+        return (! empty($string)) ? $string : $default;
+    }
+
+    private function readInteger($string, $default = null) {
+        $string = trim($string);
+        return (! empty($string)) ? intval($string) : $default;
+    }
+
+    private function readFloat($string, $default = null) {
+        $string = trim(str_replace(",", ".", $string));
+        return (! empty($string)) ? floatval($string) : $default;
+    }
+
+    private function readBoolean($string, $default = null) {
+        $string = trim($string);
+        return (! empty($string)) ? (strtolower($string) == 'true') : $default;
+    }
+
+    private function readOrientation($string, $default = null) {
+        $string = trim($string);
+        return (! empty($string)) ? ((strtolower($string) == 'sense')||($string == '+')) : $default;
+    }
+
+    private function readArray($string, $default = null) {
+        $string = trim($string);
+        return (! empty($string)) ? explode(',', preg_replace('/\s+/', '', $string)) : null;
     }
 }

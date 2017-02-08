@@ -370,9 +370,9 @@ class Construct extends SecureEntity implements MutableIdEntityInterface
      *
      * @param string
      */
-    public function setVendor($stockVendor)
+    public function setVendor($vendor)
     {
-        $this->vendor = $stockVendor;
+        $this->vendor = $vendor;
     }
 
     /**
@@ -447,8 +447,10 @@ class Construct extends SecureEntity implements MutableIdEntityInterface
     public function setMethod($method)
     {
         $this->method = $method;
-        if ($method->getConstruct() !== $this) {
-            $method->setConstruct($this);
+        if (null !== $method) {
+            if ($method->getConstruct() !== $this) {
+                $method->setConstruct($this);
+            }
         }
     }
 

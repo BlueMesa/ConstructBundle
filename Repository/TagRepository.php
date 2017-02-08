@@ -2,7 +2,7 @@
 
 namespace Bluemesa\Bundle\ConstructBundle\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use Bluemesa\Bundle\CoreBundle\Repository\EntityRepository;
 
 /**
  * TagRepository

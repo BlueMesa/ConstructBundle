@@ -73,12 +73,14 @@ class TagsType extends EntityType
         $entities = array();
 
         // Check if all submitted values are valid IDs
-        foreach ($data as $key => $value) {
-            if (!is_numeric($value)) {
-                /** @var NamedTrait $entity */
-                $entity = new $options['class']();
-                $entity->setName($value);
-                $entities[$key] = $entity;
+        if (!empty($data)) {
+            foreach ($data as $key => $value) {
+                if (!is_numeric($value)) {
+                    /** @var NamedTrait $entity */
+                    $entity = new $options['class']();
+                    $entity->setName($value);
+                    $entities[$key] = $entity;
+                }
             }
         }
 

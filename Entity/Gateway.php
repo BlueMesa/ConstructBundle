@@ -45,6 +45,7 @@ class Gateway extends VectorInsert
      */
     protected $destinationVectorSize;
 
+
     /**
      * @return string
      */
@@ -75,5 +76,16 @@ class Gateway extends VectorInsert
     public function setDestinationVectorSize($destinationVectorSize)
     {
         $this->destinationVectorSize = $destinationVectorSize;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSize()
+    {
+        $vector = (null !== $this->getDestinationVector()) ? $this->getDestinationVectorSize() : $this->getVectorSize();
+        $insert = $this->getInsertSize();
+
+        return ((null !== $vector)&&(null !== $insert)) ? ($vector + $insert) : null;
     }
 }
