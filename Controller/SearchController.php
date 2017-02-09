@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @REST\Prefix("/constructs/search")
  * @REST\NamePrefix("bluemesa_construct_search_")
- * @Search(realm="bluemesa_constructs")
+ * @Search(realm="bluemesa_construct", unique_result_route="bluemesa_construct_show")
  *
  * @author Radoslaw Kamil Ejsmont <radoslaw@ejsmont.net>
  */
