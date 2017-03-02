@@ -76,8 +76,8 @@ class ConstructController extends Controller
     /**
      * @CRUD\Action("new")
      * @REST\View()
-     * @REST\Route("/new", methods={"GET", "PUT"}, defaults={"_format" = "html"})
-     * @REST\Put("", name="_rest", defaults={"_format" = "html"})
+     * @REST\Route("/new", methods={"GET", "POST"}, defaults={"_format" = "html"})
+     * @REST\Post("", name="_rest", defaults={"_format" = "html"})
      *
      * @param  Request     $request
      * @return View
@@ -90,8 +90,8 @@ class ConstructController extends Controller
     /**
      * @CRUD\Action("edit")
      * @REST\View()
-     * @REST\Route("/{id}/edit", methods={"GET", "POST"}, requirements={"id"="\d+"}, defaults={"_format" = "html"})
-     * @REST\Post("/{id}", name="_rest", requirements={"id"="\d+"}, defaults={"_format" = "html"})
+     * @REST\Route("/{id}/edit", methods={"GET", "PUT"}, requirements={"id"="\d+"}, defaults={"_format" = "html"})
+     * @REST\Put("/{id}", name="_rest", requirements={"id"="\d+"}, defaults={"_format" = "html"})
      *
      * @param  Request     $request
      * @return View
@@ -104,7 +104,7 @@ class ConstructController extends Controller
     /**
      * @CRUD\Action("delete")
      * @REST\View()
-     * @REST\Route("/{id}/delete", methods={"DELETE", "POST"}, requirements={"id"="\d+"}, defaults={"_format" = "html"})
+     * @REST\Route("/{id}/delete", methods={"DELETE"}, requirements={"id"="\d+"}, defaults={"_format" = "html"})
      * @REST\Delete("/{id}", name="_rest", requirements={"id"="\d+"}, defaults={"_format" = "html"})
      *
      * @param  Request     $request
@@ -116,8 +116,7 @@ class ConstructController extends Controller
     }
 
     /**
-     * @REST\Post("/_ajax/method/form",
-     *     defaults={"_format" = "html"}, requirements={"_format" = "html"})
+     * @REST\Post("/_ajax/method/form", defaults={"_format" = "html"}, requirements={"_format" = "html"})
      * @REST\RequestParam(name="entity")
      * @REST\RequestParam(name="form")
      *
